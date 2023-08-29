@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 
 public class MyTreeNode
 {
@@ -47,5 +48,25 @@ public class MyTreeNode
     public List<string> GetChildren()
     {
         return Children.Select(child => child.Data).ToList();
+    }
+
+    public TreeNode ToTreeNode()
+    {
+        var treeNode = new TreeNode(this.Data);
+        foreach (var child in Children)
+        {
+            treeNode.Nodes.Add(child.ToTreeNode());
+        }
+        return treeNode;
+    }
+
+    public static MyTreeNode FromTreeNode(TreeNode treeNode)
+    {
+        var myNode = new MyTreeNode(treeNode.Text);
+        foreach (TreeNode child in treeNode.Nodes)
+        {
+            myNode.AddChild(FromTreeNode(child));
+        }
+        return myNode;
     }
 }
