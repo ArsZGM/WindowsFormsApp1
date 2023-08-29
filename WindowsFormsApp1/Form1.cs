@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 using System.IO;
 
@@ -42,23 +42,25 @@ namespace WindowsFormsApp1
         {
             if (string.IsNullOrWhiteSpace(inputBox.Text)) return;
 
-            TreeNode newNode = new TreeNode(inputBox.Text);
+            MyTreeNode newNode = new MyTreeNode(inputBox.Text);
             if (treeView.SelectedNode == null)
             {
-                treeView.Nodes.Add(newNode);
+                treeView.Nodes.Add(newNode.ToTreeNode());
             }
             else
             {
-                treeView.SelectedNode.Nodes.Add(newNode);
+                var parentMyNode = MyTreeNode.FromTreeNode(treeView.SelectedNode);
+                parentMyNode.AddChild(newNode);
+                treeView.SelectedNode.Nodes.Add(newNode.ToTreeNode());
             }
             inputBox.Clear();
         }
 
-        private string GenerateHTMLReport(TreeNode node)
+        private string GenerateHTMLReport(MyTreeNode node, bool isRoot = false)
         {
             if (node == null) return "";
 
-            var css = @"
+            var css = isRoot ? @"
     <style>
         table {
             width: 100%;
@@ -74,21 +76,20 @@ namespace WindowsFormsApp1
             height: 100%;
             width: 20px;
         }
-    </style>";
+    </style>" : "";
 
-            var html = node == treeView.Nodes[0] ? css : "";
-            html += "<table>";
-            html += "<tr><td rowspan='" + (node.Nodes.Count + 1) + "'>" + node.Text + "</td>";
-            if (node.Nodes.Count > 0)
+            var html = css + "<table>";
+            html += "<tr><td rowspan='" + (node.Children.Count + 1) + "'>" + node.Data + "</td>";
+            if (node.Children.Count > 0)
             {
-                html += "<td>" + GenerateHTMLReport(node.Nodes[0]) + "</td></tr>";
-                for (int i = 1; i < node.Nodes.Count; i++)
+                html += "<td>" + GenerateHTMLReport(node.Children[0]) + "</td></tr>";
+                for (int i = 1; i < node.Children.Count; i++)
                 {
-                    html += "<tr><td>" + GenerateHTMLReport(node.Nodes[i]) + "</td></tr>";
+                    html += "<tr><td>" + GenerateHTMLReport(node.Children[i]) + "</td></tr>";
                 }
             }
             html += "</tr></table>";
-            //не совсем понимаю, почему границы первых детей съезжают, надеюсь, не критично
+
             return html;
         }
 
@@ -97,16 +98,15 @@ namespace WindowsFormsApp1
             if (treeView.Nodes.Count == 0) return;
 
             string html = "";
-            foreach (TreeNode node in treeView.Nodes)
+            foreach (TreeNode treeNode in treeView.Nodes)
             {
-                html += GenerateHTMLReport(node);
+                var node = MyTreeNode.FromTreeNode(treeNode);
+                html += GenerateHTMLReport(node, true);
             }
 
-            
             string filePath = "report.html";
             File.WriteAllText(filePath, html);
 
-            
             reportBox.Text = "HTML report saved to: " + filePath;
         }
     }
