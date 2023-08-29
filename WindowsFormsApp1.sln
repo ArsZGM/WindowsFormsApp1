@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33927.289
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeApp", "WindowsFormsApp1\TreeApp.csproj", "{6732DEEF-32B3-416F-B90F-127981418DCD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1404E3B6-1D98-4FFE-A177-CAD0BFF659DF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6732DEEF-32B3-416F-B90F-127981418DCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6732DEEF-32B3-416F-B90F-127981418DCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6732DEEF-32B3-416F-B90F-127981418DCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6732DEEF-32B3-416F-B90F-127981418DCD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D39DB484-1689-45FC-AD20-4C7DD022BE35}
+	EndGlobalSection
+EndGlobal

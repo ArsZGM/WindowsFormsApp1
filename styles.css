@@ -1,0 +1,68 @@
+﻿.tree table {
+    width: 60%;
+    height: 100%;
+}
+
+.tree td {
+    border: 0px;
+    position: relative;
+}
+
+.node {
+    padding: 5px;
+    border: 1px solid black;
+    z-index: 999;
+    background: #fff;
+}
+
+.dash-front {
+    position: absolute;
+    content: "----------";
+    letter-spacing: -2px;
+    right: -18px;
+    z-index: -999;
+}
+
+.dash-back {
+    position: absolute;
+    content: "----";
+    letter-spacing: -3px;
+    left: -15px;
+    z-index: -999;
+}
+
+.spacer {
+    padding: 5px;
+}
+
+.connecter {
+    border-left: 1px solid black;
+}
+
+td.connecter1 {
+    transform-origin: center;
+    transform: translateY(1px) translateX(18px) scaleY(2.05);
+}
+
+td.connecter2 {
+    transform-origin: center;
+    transform: translateY(1px) translateX(18px) scaleY(1.34);
+}
+
+td.connecter3 {
+    transform-origin: center;
+    transform: translateY(1px) translateX(18px) scaleY(1.15);
+}
+
+td.connecter4 {
+    transform-origin: center;
+    transform: translateY(2px) translateX(18px) scaleY(1.07);
+}
+
+td:first-child .dash-back {
+    display: none;
+}
+
+td:last-child .dash-front {
+    display: none;
+}
