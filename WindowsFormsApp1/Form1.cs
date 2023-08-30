@@ -6,10 +6,14 @@ namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
+        private MyTreeNode rootNode;
         private TreeView treeView;
         private TextBox inputBox;
         private Button addButton;
         private Button generateReportButton;
+        private Button showPathButton;
+        private Button showParentsButton;
+        private Button showChildrenButton;
         private RichTextBox reportBox;
 
         public Form1()
@@ -34,26 +38,76 @@ namespace WindowsFormsApp1
             generateReportButton.Click += GenerateReport;
             this.Controls.Add(generateReportButton);
 
-            reportBox = new RichTextBox() { Left = 220, Top = 70, Width = 350, Height = 220 };
+            showPathButton = new Button() { Left = 220, Top = 70, Width = 150, Text = "Показать путь" };
+            showPathButton.Click += ShowPath;
+            this.Controls.Add(showPathButton);
+
+            showParentsButton = new Button() { Left = 380, Top = 70, Width = 150, Text = "Показать родителей" };
+            showParentsButton.Click += ShowParents;
+            this.Controls.Add(showParentsButton);
+
+            showChildrenButton = new Button() { Left = 540, Top = 70, Width = 150, Text = "Показать детей" };
+            showChildrenButton.Click += ShowChildren;
+            this.Controls.Add(showChildrenButton);
+
+            reportBox = new RichTextBox() { Left = 220, Top = 100, Width = 550, Height = 190 };
             this.Controls.Add(reportBox);
+        }
+
+        private void UpdateTreeView()
+        {
+            treeView.Nodes.Clear();
+            if (rootNode != null)
+            {
+                treeView.Nodes.Add(ConvertToTreeNode(rootNode));
+            }
+        }
+
+        private TreeNode ConvertToTreeNode(MyTreeNode myNode)
+        {
+            var treeNode = new TreeNode(myNode.Data);
+            foreach (var child in myNode.Children)
+            {
+                treeNode.Nodes.Add(ConvertToTreeNode(child));
+            }
+            return treeNode;
+        }
+
+        private MyTreeNode FindMyTreeNode(MyTreeNode current, string data)
+        {
+            if (current.Data == data) return current;
+            foreach (var child in current.Children)
+            {
+                var result = FindMyTreeNode(child, data);
+                if (result != null) return result;
+            }
+            return null;
         }
 
         private void AddNode(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(inputBox.Text)) return;
 
-            MyTreeNode newNode = new MyTreeNode(inputBox.Text);
+            var newNode = new MyTreeNode(inputBox.Text);
             if (treeView.SelectedNode == null)
             {
-                treeView.Nodes.Add(newNode.ToTreeNode());
+                if (rootNode == null)
+                {
+                    rootNode = newNode;
+                }
+                else
+                {
+                    rootNode.AddChild(newNode);
+                }
             }
             else
             {
-                var parentMyNode = MyTreeNode.FromTreeNode(treeView.SelectedNode);
-                parentMyNode.AddChild(newNode);
-                treeView.SelectedNode.Nodes.Add(newNode.ToTreeNode());
+                // Найдем соответствующий узел в структуре MyTreeNode
+                var selectedMyNode = FindMyTreeNode(rootNode, treeView.SelectedNode.Text);
+                selectedMyNode.AddChild(newNode);
             }
             inputBox.Clear();
+            UpdateTreeView();
         }
 
         private string GenerateHTMLReport(MyTreeNode node, bool isRoot = false)
@@ -95,19 +149,38 @@ namespace WindowsFormsApp1
 
         private void GenerateReport(object sender, EventArgs e)
         {
-            if (treeView.Nodes.Count == 0) return;
+            if (rootNode == null) return;
 
-            string html = "";
-            foreach (TreeNode treeNode in treeView.Nodes)
-            {
-                var node = MyTreeNode.FromTreeNode(treeNode);
-                html += GenerateHTMLReport(node, true);
-            }
+            string html = GenerateHTMLReport(rootNode, true);
 
             string filePath = "report.html";
             File.WriteAllText(filePath, html);
 
             reportBox.Text = "HTML report saved to: " + filePath;
+        }
+
+        private void ShowPath(object sender, EventArgs e)
+        {
+            if (treeView.SelectedNode == null) return;
+
+            var selectedMyNode = FindMyTreeNode(rootNode, treeView.SelectedNode.Text);
+            reportBox.Text = selectedMyNode.GetPath();
+        }
+
+        private void ShowParents(object sender, EventArgs e)
+        {
+            if (treeView.SelectedNode == null) return;
+
+            var selectedMyNode = FindMyTreeNode(rootNode, treeView.SelectedNode.Text);
+            reportBox.Text = string.Join(", ", selectedMyNode.GetParents());
+        }
+
+        private void ShowChildren(object sender, EventArgs e)
+        {
+            if (treeView.SelectedNode == null) return;
+
+            var selectedMyNode = FindMyTreeNode(rootNode, treeView.SelectedNode.Text);
+            reportBox.Text = string.Join(", ", selectedMyNode.GetChildren());
         }
     }
 }
